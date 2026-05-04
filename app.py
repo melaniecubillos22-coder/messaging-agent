@@ -1,8 +1,11 @@
-from flask import Flask, request, jsonify
-import os
+from flask_cors import Cors
+
+app = Flask(__name__)
+Cors(app)
 from anthropic import Anthropic
 
 app = Flask(__name__)
+Cors(app)
 
 client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
