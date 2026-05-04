@@ -10,30 +10,30 @@ client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 @app.route("/")
 def home():
-return "Messaging Agent is running"
+	return "Messaging Agent is running"
 
 @app.route("/chat", methods=["POST"])
 def chat():
-try:
-data = request.get_json()
-user_message = data.get("message", "")
+	try:
+		data = request.get_json()
+		user_message = data.get("message", "")
 
-response = client.messages.create(
-model="claude-3-5-sonnet-20241022",
-max_tokens=250,
-system="You are a friendly, girly, professional customer service agent for Maid to Shine, a maid cleaning service. Be warm, helpful, and guide customers to book.",
-messages=[
-{"role": "user", "content": user_message}
-]
-)
+		response = client.messages.create(
+			model="claude-3-5-sonnet-20241022",
+			max_tokens=250,
+			system="You are a friendly, girly, professional customer service agent for Maid to Shine, a maid cleaning service. Be warm, helpful, and guide customers to book.",
+			messages=[
+				{"role": "user", "content": user_message}
+			]
+		)
 
-return jsonify({
-"response": response.content[0].text
-})
+		return jsonify({
+			"response": response.content[0].text
+		})
 
-except Exception as e:
-return jsonify({"error": str(e)}), 500
+	except Exception as e:
+		return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
-app.run(host="0.0.0.0", port=5000)
+	app.run(host="0.0.0.0", port=5000)
