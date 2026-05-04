@@ -1,39 +1,30 @@
-import anthropic
 from flask import Flask, request, jsonify
+import os
+from anthropic import Anthropic
 
 app = Flask(__name__)
 
-@app.route('/message', methods=['POST'])
-def message():
-    data = request.get_json()
-    user_message = data.get('message', '')
+client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
-    client = anthropic.Anthropic(
-        # defaults to os.environ.get("ANTHROPIC_API_KEY")
-        api_key="my_api_key",
+@app.route("/")
+def home():
+    return "Messaging Agent is running"
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.json
+    user_message = data.get("message")
+
+    response = client.messages.create(
+        model="claude-3-5-sonnet-20241022",
+        max_tokens=250,
+        system="You are a friendly, girly, professional customer service agent for Maid to Shine, a maid cleaning service. Respond warmly, keep messages short, ask what service they need, their location, preferred date/time, home size, and contact info. Help customers book cleaning appointments. Do not mention you are AI.",
+        messages=[{"role": "user", "content": user_message}]
     )
 
-    message = client.messages.create(
-        model="claude-opus-4-7",
-        max_tokens=20000,
-        system="maid cleaning service, nice, girly, friendly but business oriented short responses",
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": user_message
-                    }
-                ]
-            }
-        ],
-        thinking={
-            "type": "adaptive"
-        }
-    )
-    response = message.content[0].text if message.content else ""
-    return jsonify({"response": response})
+    return jsonify({
+        "response": response.content[0].text
+    })
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
