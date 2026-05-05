@@ -1,2 +1,3 @@
 # messaging-agent
-AI messaging agent powered by Anthropic API
+
+AI messaging agent powered by Anthropic AI
